@@ -4,7 +4,6 @@
 -- Se ejecuta DESPUÉS de crear las tablas (A.4), ya que se otorgan
 -- permisos sobre objetos que deben existir previamente.
 -- =====================================================
-\c db_ep1_equipo_09
 
 -- Por defecto, en PostgreSQL el rol especial PUBLIC tiene algunos
 -- privilegios heredados. Se los quitamos primero para partir de

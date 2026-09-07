@@ -21,9 +21,8 @@ GRANT SELECT ON
 TO "ROL_READ_EP1_EQUIPO_09";
 
 -- ============ ROL_WRITE: lectura + escritura CONTROLADA ============
--- Solo puede escribir en la tabla TRANSACCIONAL (MOV), NO en los
--- catálogos maestros (CLASE_MOV, CENTROS) -> esa es la tabla
--- "indicada abajo" equivalente a PEDIDOS/PAGOS del enunciado genérico.
+-- Solo puede escribir en la tabla TRANSACCIONAL (MOV), 
+-- y NO en los catálogos maestros (CLASE_MOV, CENTROS)
 GRANT USAGE ON SCHEMA public TO "ROL_WRITE_EP1_EQUIPO_09";
 GRANT INSERT, UPDATE ON "MOV_EP1_EQUIPO_09" TO "ROL_WRITE_EP1_EQUIPO_09";
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO "ROL_WRITE_EP1_EQUIPO_09";
@@ -38,8 +37,7 @@ GRANT SELECT ON
 TO "ROL_AUDIT_EP1_EQUIPO_09";
 
 -- Permiso adicional para que AUDITOR pueda revisar actividad/sesiones
--- del servidor SIN ser superusuario (equivalente a "permisos para
--- revisar auditoría/logs" que pide la pauta).
+-- del servidor SIN ser superusuario (equivalente a "permisos para revisar auditoría/logs").
 GRANT pg_read_all_stats TO "AUDITOR_EP1_EQUIPO_09";
 
 -- Verificación:

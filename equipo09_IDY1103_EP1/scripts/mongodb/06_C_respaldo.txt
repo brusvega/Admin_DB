@@ -1,0 +1,49 @@
+--------------------------------------------------------------------------------
+PASO 1: OBTENER LA CADENA DE CONEXIÓN (URI) DESDE MONGODB COMPASS
+--------------------------------------------------------------------------------
+1. Abre MongoDB Compass.
+2. Si ya estás conectado, dirígete a la parte superior de la pantalla o a la
+   pestaña de conexiones donde aparece la URI de conexión.
+3. Copia la cadena de conexión completa (Connection String).
+   - Ejemplo local: mongodb://localhost:27017
+
+--------------------------------------------------------------------------------
+PASO 2: VERIFICAR LA INSTALACIÓN DE MONGODUMP
+--------------------------------------------------------------------------------
+1. Abre tu terminal de comandos:
+   - Windows: Símbolo del sistema (CMD) o PowerShell.
+
+2. Ejecuta el siguiente comando para verificar si `mongodump` está instalado:
+
+   mongodump --version
+
+3. Si el comando responde con la versión instalada, puedes continuar.
+4. Si la terminal indica que el comando no se reconoce o no se encuentra:
+   - Debes descargar e instalar "MongoDB Database Tools" desde el sitio oficial:
+     https://www.mongodb.com/try/download/database-tools
+   - En Windows, agrega la carpeta `bin` de las herramientas instaladas al PATH
+     de las variables de entorno del sistema.
+
+--------------------------------------------------------------------------------
+PASO 3: EJECUTAR EL COMANDO DE RESPALDO (MONGODUMP)
+--------------------------------------------------------------------------------
+Abre tu terminal y ejecuta el siguiente comando
+
+mongodump --uri="mongodb://localhost:27017" --db=db_ep1_equipo_09 --out="C:\Respaldos\MongoDB"
+
+--------------------------------------------------------------------------------
+PASO 4: VERIFICAR LA COPIA DE SEGURIDAD
+--------------------------------------------------------------------------------
+1. Ve a la carpeta que especificaste en la opción `--out`.
+2. Verás una subcarpeta con el nombre de tu base de datos.
+3. Dentro de esa carpeta encontrarás por cada colección dos archivos:
+   - `<colección>.bson`: Contiene los datos binarios.
+   - `<colección>.metadata.json`: Contiene la estructura e índices.
+
+--------------------------------------------------------------------------------
+ANEXO: CÓMO RESTAURAR EL RESPALDO CON MONGORESTORE
+--------------------------------------------------------------------------------
+Si en el futuro necesitas restaurar los datos en MongoDB, utiliza el comando
+`mongorestore` desde la terminal:
+
+mongorestore --uri="TU_CADENA_DE_CONEXION" --db=NOMBRE_BD_DESTINO "C:\Ruta\De\Destino\NOMBRE_DE_TU_BD"

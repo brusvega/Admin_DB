@@ -1,0 +1,38 @@
+=====================================================
+EQUIPO_09 - IDY1103 - EP1
+Script 05: Políticas de seguridad
+=====================================================
+
+1) POLÍTICAS DE CONTRASEÑA
+   - Complejidad: por defecto ya se exige manualmente el patrón mayúscula+minúscula+
+     número+símbolo.
+   - Expiración: MongoDB Community no soporta expiración nativa de
+     contraseñas de usuarios de base de datos; se documenta como
+     limitación y se propone rotación manual cada 90 días como
+     control compensatorio.
+   - Bloqueo por intentos fallidos: no soportado de forma nativa en
+     Community Edition; se propone como mejora futura el uso de
+     MongoDB Enterprise/Atlas u objetos de proxy con fail2ban sobre
+     el log de autenticación.
+
+2) AUDITORÍA: registrar login/logout, intentos fallidos y acceso a colecciones sensibles
+  (no se ejecuta con mongosh, se aplica en el archivo de
+  configuración del servidor 'mongod.cfg' y se reinicia el servicio de MongoDB en el Sistema Operativo) 
+
+    setParameter:
+    auditAuthorizationSuccess: true
+
+    auditLog:
+      destination: file
+      format: JSON
+      path: /var/log/mongodb/audit.json
+      filter: '{
+        $or: [
+          { atype: { $in: ["authenticate", "logout", "createCollection", "dropCollection"] } },
+          {
+            atype: "authCheck",
+            "param.ns": "base_de_datos.coleccion_sensible",
+            "param.command": { $in: ["find", "insert", "update", "delete", "findAndModify"] }
+          }
+        ]
+      }'

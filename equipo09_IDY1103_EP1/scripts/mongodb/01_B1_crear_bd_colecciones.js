@@ -11,3 +11,10 @@ db.createCollection("COL_MOV_EP1_EQUIPO_09");
 db.createCollection("COL_CLASE_MOV_EP1_EQUIPO_09");
 db.createCollection("COL_CENTROS_EP1_EQUIPO_09");
 db.createCollection("COL_LOG_ACCESO_EP1_EQUIPO_09");
+
+// Insertar datos de prueba para coleccion log
+db.COL_LOG_ACCESO_EP1_EQUIPO_09.insertOne({
+  usuario: "MONGO_ADMIN_EP1_EQUIPO_09",
+  accion: "INIT_DATA",
+  fecha_hora: new Date()
+});

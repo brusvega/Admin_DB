@@ -1,9 +1,8 @@
 -- =====================================================
 -- EQUIPO_09 - IDY1103 - EP1
--- Script 07: Auditoría y cifrado
+-- PASO C.2: Auditoría
 -- =====================================================
 
--- ============ AUDITORÍA ============
 -- Configuración recomendada en postgresql.conf (requiere reinicio del servicio):
 --   log_connections     = on
 --   log_disconnections  = on
@@ -37,15 +36,46 @@ RESET ROLE;
 INSERT INTO "LOG_ACCESO_EP1_EQUIPO_09" (accion, tabla_afectada)
 VALUES ('LOGIN_TEST', 'N/A');
 
--- ============ CIFRADO ============
--- En tránsito (TLS/SSL) - configurar en postgresql.conf:
---   ssl = on
---   ssl_cert_file = 'server.crt'
---   ssl_key_file  = 'server.key'
--- Y en pg_hba.conf exigir conexiones "hostssl" en lugar de "host".
---
--- Si el entorno de laboratorio no permite configurar TLS (por ejemplo,
--- sin permisos de administración del servicio), se documenta como
--- limitación y se propone como mejora futura habilitarlo en el servidor
--- productivo, dejando como control compensatorio restringir el acceso
--- a la red local del laboratorio.
+
+
+
+-- JUAN (REVISAR VARIABLES):
+-- 1. Logs nativos de conexion
+ALTER SYSTEM SET log_connections = 'on';
+ALTER SYSTEM SET log_disconnections = 'on';
+ALTER SYSTEM SET log_line_prefix = '%m [%p] %u@%d: ';
+SELECT pg_reload_conf();
+
+-- 2. Tabla de bitacora para registrar cambios
+CREATE TABLE auditoria_log_ep1_equipo_09 (
+    id SERIAL PRIMARY KEY,
+    usuario VARCHAR(50) NOT NULL,
+    operacion VARCHAR(20) NOT NULL,
+    tabla_afectada VARCHAR(50) NOT NULL,
+    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    detalles TEXT
+);
+
+-- Acceso de lectura al rol auditor
+GRANT SELECT ON auditoria_log_ep1_equipo_09 TO rol_audit_ep1_equipo_09;
+
+-- 3. Funcion trigger para guardar el log cuando se inserte o modifique un movimiento
+CREATE OR REPLACE FUNCTION fn_log_auditoria_movimientos()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO auditoria_log_ep1_equipo_09 (usuario, operacion, tabla_afectada, detalles)
+    VALUES (
+        SESSION_USER,
+        TG_OP,
+        TG_TABLE_NAME,
+        CONCAT('Material: ', NEW.material, ' | Doc: ', NEW.documento_material)
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger asociado a la tabla de movimientos
+DROP TRIGGER IF EXISTS trg_auditoria_movimientos ON mov_ep1_equipo_09;
+CREATE TRIGGER trg_auditoria_movimientos
+AFTER INSERT OR UPDATE ON mov_ep1_equipo_09
+FOR EACH ROW EXECUTE FUNCTION fn_log_auditoria_movimientos();
